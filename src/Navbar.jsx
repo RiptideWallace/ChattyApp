@@ -5,8 +5,8 @@ class Navbar extends Component {
 
   render() {
     return (
-      <nav class="navbar">
-        <a href="/" class="navbar-brand">Chatty</a>
+      <nav className="navbar">
+        <a href="/" className="navbar-brand">Chatty</a>
       </nav>
     )
   }
