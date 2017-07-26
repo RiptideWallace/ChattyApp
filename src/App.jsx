@@ -12,8 +12,8 @@ class App extends Component {
       currentUser: {name: "Bob"},
       messages: []
     };
-    this.onNewMessage = this.onNewMessage.bind(this);
-    this.onNewUser = this.onNewUser.bind(this);
+    this.newMessage = this.newMessage.bind(this);
+    this.newUser = this.newUser.bind(this);
   }
 
   componentDidMount(){
@@ -30,12 +30,12 @@ class App extends Component {
     }
   }
 
-  onNewMessage(msg) {
+  newMessage(msg) {
     const newMessage = {id: msg.id, username: msg.name, content: msg.content};
     this.socket.send(JSON.stringify(newMessage));
   }
 
-  onNewUser(username) {
+  newUser(username) {
     this.setState({currentUser: {name: username}});
   }
 
@@ -45,8 +45,8 @@ class App extends Component {
         <Navbar/>
         <MessageList messages = {this.state.messages}/>
         <ChatBar currentUser = {this.state.currentUser}
-                 onNewUser = {this.onNewUser}
-                 onNewMessage = {this.onNewMessage}/>
+                 newUser = {this.newUser}
+                 newMessage = {this.newMessage}/>
       </div>
     );
   }
