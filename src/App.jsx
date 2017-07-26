@@ -23,9 +23,21 @@ class App extends Component {
         }
       ]
     };
+    this.onNewMessage = this.onNewMessage.bind(this);
   }
-  componentDidMount(){
 
+  componentDidMount(){
+    const websocket = new WebSocket ('ws://0.0.0.0:3001');
+    this.socket = websocket;
+    websocket.onopen = (event) => {
+      console.log('Connected to server', event);
+    }
+  }
+
+  onNewMessage(msg) {
+    const newMessage = {id: msg.id, username: msg.name, content: msg.content};
+    const messages = this.state.messages.concat(newMessage)
+    this.setState({messages: messages})
   }
 
   render() {
@@ -33,9 +45,11 @@ class App extends Component {
       <div>
         <Navbar/>
         <MessageList messages = {this.state.messages}/>
-        <ChatBar currentUser = {this.state.currentUser}/>
+        <ChatBar currentUser = {this.state.currentUser}
+                 onNewMessage = {this.onNewMessage}/>
       </div>
     );
   }
 }
+
 export default App;
