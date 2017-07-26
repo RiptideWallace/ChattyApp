@@ -10,20 +10,10 @@ class App extends Component {
     super(props);
     this.state = {
       currentUser: {name: "Bob"},
-      messages: [
-        {
-          id: 1,
-          username: "Bob",
-          content: "Hello"
-        },
-        {
-          id: 2,
-          username: "Steve",
-          content: "Hi there"
-        }
-      ]
+      messages: []
     };
     this.onNewMessage = this.onNewMessage.bind(this);
+    this.onNewUser = this.onNewUser.bind(this);
   }
 
   componentDidMount(){
@@ -45,12 +35,17 @@ class App extends Component {
     this.socket.send(JSON.stringify(newMessage));
   }
 
+  onNewUser(username) {
+    this.setState({currentUser: {name: username}});
+  }
+
   render() {
     return (
       <div>
         <Navbar/>
         <MessageList messages = {this.state.messages}/>
         <ChatBar currentUser = {this.state.currentUser}
+                 onNewUser = {this.onNewUser}
                  onNewMessage = {this.onNewMessage}/>
       </div>
     );
