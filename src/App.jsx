@@ -30,14 +30,19 @@ class App extends Component {
     const websocket = new WebSocket ('ws://0.0.0.0:3001');
     this.socket = websocket;
     websocket.onopen = (event) => {
-      console.log('Connected to server', event);
+      console.log('Connected to server');
+    }
+    websocket.onmessage = (event) => {
+      console.log('Incoming message', event.data);
+      const incomingMessage = JSON.parse(event.data);
+      const messages = this.state.messages.concat(incomingMessage);
+      this.setState({messages: messages});
     }
   }
 
   onNewMessage(msg) {
     const newMessage = {id: msg.id, username: msg.name, content: msg.content};
-    const messages = this.state.messages.concat(newMessage)
-    this.setState({messages: messages})
+    this.socket.send(JSON.stringify(newMessage));
   }
 
   render() {
