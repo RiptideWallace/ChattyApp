@@ -8,24 +8,24 @@ class ChatBar extends Component {
     this.changeUser = this.changeUser.bind(this);
   }
 
-  onKeyPress(ent){
-    if (ent.key === 'Enter') {
+  onKeyPress(input){
+    if (input.key === 'Enter') {
       console.log('Enter pressed');
-      this.props.newMessage({name: this.props.currentUser.name, content: ent.target.value});
-      ent.target.value = "";
+      this.props.newMessage({name: this.props.currentUser.name, content: input.target.value});
+      input.target.value = "";
     }
   }
 
-  changeUser(ent) {
-    if (ent.key === 'Enter') {
+  changeUser(input) {
+    if (input.key === 'Enter') {
       console.log('User changed');
-      this.props.newUser(ent.target.value);
+      this.props.newUser(input.target.value);
     }
   }
   render() {
     return (
       <footer className="chatbar">
-        <input className="chatbar-username" defaultValue={this.props.currentUser.name} onKeyPress={this.changeUser} />
+        <input className="chatbar-username" placeholder="Type in your name and hit ENTER" onKeyPress={this.changeUser} />
         <input className="chatbar-message" placeholder="Type a message and hit ENTER" onKeyPress={this.onKeyPress}/>
       </footer>
     )

@@ -1,5 +1,3 @@
-// server.js
-
 const express = require('express');
 const SocketServer = require('ws').Server;
 const uuid = require('uuid');
@@ -24,14 +22,28 @@ let sharedContent = '';
 wss.on('connection', (ws) => {
   console.log('Client connected');
 
-  ws.on('message', (data) => {
-    const output = JSON.parse(data);
-    output.id = uuid();
-    console.log('User', output.username, 'said', output.content);
-    sharedContent = output;
-    broadcast(sharedContent);
+  ws.on('message', (clientData) => {
+    const data = JSON.parse(clientData);
+    switch(data.type) {
 
-  })
+    case 'postMessage':
+      data.type = 'incomingMessage';
+      data.id = uuid();
+      console.log('User', data.username, 'said', data.content);
+      sharedContent = data;
+      broadcast(sharedContent);
+    break;
+
+    case 'postNotification':
+      data.type = 'incomingNotification';
+      sharedContent = data;
+      broadcast(sharedContent);
+    break;
+
+    default:
+      throw new Error("Unknow event type" + data.type);
+    }
+  });
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
   ws.on('close', () => console.log('Client disconnected'));
 });
