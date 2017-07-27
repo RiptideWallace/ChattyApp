@@ -15,12 +15,18 @@ const server = express()
 const wss = new SocketServer({ server });
 
 let sharedContent = '';
-
+let clientCount = {
+  count: wss.clients.size,
+  type: 'clientCount'
+}
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 wss.on('connection', (ws) => {
   console.log('Client connected');
+  clientCount.count = wss.clients.size;
+  broadcast(clientCount);
+  console.log("Active Users:", clientCount.count);
 
   ws.on('message', (clientData) => {
     const data = JSON.parse(clientData);
@@ -46,6 +52,8 @@ wss.on('connection', (ws) => {
   });
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
   ws.on('close', () => console.log('Client disconnected'));
+    clientCount.count = wss.clients.size;
+    broadcast(clientCount);
 });
 
 function broadcast(data) {
@@ -53,3 +61,5 @@ function broadcast(data) {
     client.send(JSON.stringify(data));
   }
 }
+
+

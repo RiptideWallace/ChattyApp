@@ -5,13 +5,15 @@ import ChatBar from './ChatBar.jsx';
 import MessageList from './MessageList.jsx';
 
 class App extends Component {
-
   constructor(props) {
     super(props);
+
     this.state = {
       currentUser: [],
-      messages: []
+      messages: [],
+      count: 0
     };
+
     this.newMessage = this.newMessage.bind(this);
     this.newUser = this.newUser.bind(this);
   }
@@ -38,6 +40,10 @@ class App extends Component {
           this.setState({messages: notifications});
         break;
 
+        case 'clientCount':
+          this.setState({count: data.count});
+        break;
+
       default:
         throw new Error('Unknown event type' + data.type);
       }
@@ -57,7 +63,7 @@ class App extends Component {
   render() {
     return (
       <div>
-        <Navbar/>
+        <Navbar count = {this.state.count}/>
         <MessageList  notification = {this.state.notification}
                       messages = {this.state.messages}/>
         <ChatBar currentUser = {this.state.currentUser}
