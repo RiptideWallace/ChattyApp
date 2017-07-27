@@ -1,6 +1,7 @@
 const express = require('express');
 const SocketServer = require('ws').Server;
 const uuid = require('uuid');
+const moment = require('moment');
 
 // Set the port to 3001
 const PORT = 3001;
@@ -42,6 +43,11 @@ wss.on('connection', (ws) => {
     switch(data.type) {
 
     case 'postMessage':
+      let timestamp = moment();
+      data.timestamp = {
+        day: timestamp.format('MMM Do'),
+        time: timestamp.format('h:mm a')
+      }
       data.type = 'incomingMessage';
       data.id = uuid();
       data.color = setUserColor();

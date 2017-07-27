@@ -13,6 +13,7 @@ class MessageList extends Component {
           console.log(message)
           return (<Message
             key={ message.id }
+            timestamp={message.timestamp}
             color={message.color}
             username ={ message.username }
             content={ message.content } />)

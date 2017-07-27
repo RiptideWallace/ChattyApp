@@ -53,10 +53,16 @@ body {
 }
 
 .message-content,
-.message-username {
+.message-username,
+.message-timestamp {
   overflow: hidden;
   margin: 5px;
   padding: 0 10px;
+}
+
+.message-timerstamp {
+  float: right;
+  color: darkgray;
 }
 
 .message-content {
