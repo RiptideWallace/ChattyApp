@@ -19,14 +19,23 @@ let clientCount = {
   count: wss.clients.size,
   type: 'clientCount'
 }
+const colors =['red', 'blue', 'green', 'magenta'];
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 wss.on('connection', (ws) => {
+
   console.log('Client connected');
   clientCount.count = wss.clients.size;
-  broadcast(clientCount);
+  setUserColor();
   console.log("Active Users:", clientCount.count);
+  broadcast(clientCount);
+
+  function setUserColor() {
+    let index = clientCount.count % colors.length;
+    return colors[index]
+  }
+
 
   ws.on('message', (clientData) => {
     const data = JSON.parse(clientData);
@@ -35,6 +44,7 @@ wss.on('connection', (ws) => {
     case 'postMessage':
       data.type = 'incomingMessage';
       data.id = uuid();
+      data.color = setUserColor();
       console.log('User', data.username, 'said', data.content);
       sharedContent = data;
       broadcast(sharedContent);
@@ -57,6 +67,7 @@ wss.on('connection', (ws) => {
 });
 
 function broadcast(data) {
+  console.log(data)
   for (let client of wss.clients) {
     client.send(JSON.stringify(data));
   }

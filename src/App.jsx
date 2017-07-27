@@ -11,7 +11,8 @@ class App extends Component {
     this.state = {
       currentUser: [],
       messages: [],
-      count: 0
+      count: 0,
+      color: 'black'
     };
 
     this.newMessage = this.newMessage.bind(this);
@@ -28,11 +29,12 @@ class App extends Component {
       const data = JSON.parse(event.data);
       console.log(data)
       switch(data.type) {
+
         case 'incomingMessage':
-        console.log('Incoming message', data);
-        const messages = this.state.messages.concat(data);
-        this.setState({messages: messages});
-      break;
+          console.log('Incoming message', data);
+          const messages = this.state.messages.concat(data);
+          this.setState({messages: messages});
+        break;
 
         case 'incomingNotification':
           console.log('Incoming notification', data);
@@ -42,6 +44,10 @@ class App extends Component {
 
         case 'clientCount':
           this.setState({count: data.count});
+        break;
+
+        case 'setUserColor':
+          this.setState({color: data.color});
         break;
 
       default:
@@ -57,7 +63,7 @@ class App extends Component {
   newUser(username) {
     const notification = {type: 'postNotification', content: this.state.currentUser.name + ' has changed their name to ' + username}
     this.socket.send(JSON.stringify(notification));
-    this.setState({currentUser: {name: username}});
+    this.setState({currentUser: {name: username, }});
   }
 
   render() {

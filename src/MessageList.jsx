@@ -10,8 +10,10 @@ class MessageList extends Component {
             {message.content}
           </div>)
         } else {
+          console.log(message)
           return (<Message
             key={ message.id }
+            color={message.color}
             username ={ message.username }
             content={ message.content } />)
         }
