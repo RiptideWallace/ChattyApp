@@ -16,48 +16,54 @@ const server = express()
 const wss = new SocketServer({ server });
 
 let sharedContent = '';
+
 let clientCount = {
   count: wss.clients.size,
   type: 'clientCount'
 }
+
+function broadcast(data) {
+  for (let client of wss.clients) {
+    client.send(JSON.stringify(data));
+  }
+}
+
 const colors =['red', 'blue', 'green', 'magenta'];
+
+function setUserColor() {
+  let index = clientCount.count % colors.length;
+  return colors[index]
+}
+
+const timestamp = moment();
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 wss.on('connection', (ws) => {
 
-  console.log('Client connected');
   clientCount.count = wss.clients.size;
-  setUserColor();
-  console.log("Active Users:", clientCount.count);
+  const thisUsersColor = setUserColor();
   broadcast(clientCount);
-
-  function setUserColor() {
-    let index = clientCount.count % colors.length;
-    return colors[index]
-  }
-
 
   ws.on('message', (clientData) => {
     const data = JSON.parse(clientData);
     switch(data.type) {
 
     case 'postMessage':
-      let timestamp = moment();
       data.timestamp = {
         day: timestamp.format('MMM Do'),
         time: timestamp.format('h:mm a')
       }
       data.type = 'incomingMessage';
       data.id = uuid();
-      data.color = setUserColor();
-      console.log('User', data.username, 'said', data.content);
+      data.color = thisUsersColor;
       sharedContent = data;
       broadcast(sharedContent);
     break;
 
     case 'postNotification':
       data.type = 'incomingNotification';
+      data.id = uuid();
       sharedContent = data;
       broadcast(sharedContent);
     break;
@@ -66,17 +72,14 @@ wss.on('connection', (ws) => {
       throw new Error("Unknow event type" + data.type);
     }
   });
+
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
-  ws.on('close', () => console.log('Client disconnected'));
+  ws.on('close', () => {
     clientCount.count = wss.clients.size;
     broadcast(clientCount);
+  });
 });
 
-function broadcast(data) {
-  console.log(data)
-  for (let client of wss.clients) {
-    client.send(JSON.stringify(data));
-  }
-}
+
 
 

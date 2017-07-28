@@ -22,22 +22,20 @@ class App extends Component {
   componentDidMount(){
     const websocket = new WebSocket ('ws://0.0.0.0:3001');
     this.socket = websocket;
+
     websocket.onopen = (event) => {
-      console.log('Connected to server');
     }
+
     websocket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log(data)
       switch(data.type) {
 
         case 'incomingMessage':
-          console.log('Incoming message', data);
           const messages = this.state.messages.concat(data);
           this.setState({messages: messages});
         break;
 
         case 'incomingNotification':
-          console.log('Incoming notification', data);
           const notifications = this.state.messages.concat(data);
           this.setState({messages: notifications});
         break;
@@ -63,7 +61,7 @@ class App extends Component {
   newUser(username) {
     const notification = {type: 'postNotification', content: this.state.currentUser.name + ' has changed their name to ' + username}
     this.socket.send(JSON.stringify(notification));
-    this.setState({currentUser: {name: username, }});
+    this.setState({currentUser: {name: username}});
   }
 
   render() {
