@@ -47,19 +47,14 @@ wss.on('connection', (ws) => {
   const thisUsersColor = setUserColor();
   broadcast(clientCount);
 
-  //If the data that is recieved from the client is a message
-      //Type is established to correspond with the client-side
-      //An ID is assigned to that message
-      //The color of the username is connected to the message
-      //The message is broadcast and sent back to the client-side
-   
-  //If the data that is recieved from the client is a notification:
-            //Type is established to correspond with the client-side
-            //An ID is assigned to that notification
-            //The notification is broadcast and sent back to the client-side
   ws.on('message', (clientData) => {
     const data = JSON.parse(clientData);
-    switch(data.type) 
+    switch(data.type) {
+    //If the data that is recieved from the client is a message
+         //Type is established to correspond with the client-side
+         //An ID is assigned to that message
+         //The color of the username is connected to the message
+         //The message is broadcast and sent back to the client-side
     case 'postMessage':
       data.type = 'incomingMessage';
       data.id = uuid();
@@ -67,7 +62,10 @@ wss.on('connection', (ws) => {
       sharedContent = data;
       broadcast(sharedContent);
     break;
-     
+    //If the data that is recieved from the client is a notification:
+            //Type is established to correspond with the client-side
+            //An ID is assigned to that notification
+            //The notification is broadcast and sent back to the client-side 
     case 'postNotification':
       data.type = 'incomingNotification';
       data.id = uuid();
