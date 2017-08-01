@@ -10,7 +10,7 @@ class App extends Component {
     // Initial app information that will hold who the currentUser is, what messages have been sent 
     // and the amount of users online
     this.state = {
-      currentUser: [],
+      currentUser: {name: 'Anonymous'},
       messages: [],
       count: 0,
       color: 'black'
