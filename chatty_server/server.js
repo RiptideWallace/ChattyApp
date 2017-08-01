@@ -1,7 +1,6 @@
 const express = require('express');
 const SocketServer = require('ws').Server;
 const uuid = require('uuid');
-const moment = require('moment');
 
 // Set the port to 3001
 const PORT = 3001;
@@ -14,14 +13,14 @@ const server = express()
 
 // Create the WebSockets server
 const wss = new SocketServer({ server });
-
+// sharedContent, which is the substance of every message sent, starts as an empty string
 let sharedContent = '';
-
+//Function the determines that clientCount is equal to the amount of users online
 let clientCount = {
   count: wss.clients.size,
   type: 'clientCount'
 }
-
+//Function for when data is sent back to the client
 function broadcast(data) {
   for (let client of wss.clients) {
     client.send(JSON.stringify(data));
@@ -29,38 +28,44 @@ function broadcast(data) {
 }
 
 const colors =['red', 'blue', 'green', 'magenta'];
-
+//Give the user a colour for their username based on the amount of colours
+//available and the amoutn of users online
 function setUserColor() {
   let index = clientCount.count % colors.length;
   return colors[index]
 }
 
-const timestamp = moment();
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 wss.on('connection', (ws) => {
-
+   //On connection:
+      //The client count is set to the amount of people online, which goes up by one when a person connects
+      //That connecting user is assigned a colour for their username
+      //The amount of users online is broadcast and sent to the client-side
   clientCount.count = wss.clients.size;
   const thisUsersColor = setUserColor();
   broadcast(clientCount);
 
   ws.on('message', (clientData) => {
     const data = JSON.parse(clientData);
-    switch(data.type) {
-
+    switch(data.type) 
+    //If the data that is recieved from the client is a message:
+          //Type is established to correspond with the client-side
+          //An ID is assigned to that message
+          //The color of the username is connected to the message
+          //The message is broadcast and sent back to the client-side
     case 'postMessage':
-      data.timestamp = {
-        day: timestamp.format('MMM Do'),
-        time: timestamp.format('h:mm a')
-      }
       data.type = 'incomingMessage';
       data.id = uuid();
       data.color = thisUsersColor;
       sharedContent = data;
       broadcast(sharedContent);
     break;
-
+      //If the data that is recieved from the client is a notification:
+            //Type is established to correspond with the client-side
+            //An ID is assigned to that notification
+            //The notification is broadcast and sent back to the client-side
     case 'postNotification':
       data.type = 'incomingNotification';
       data.id = uuid();
@@ -75,6 +80,7 @@ wss.on('connection', (ws) => {
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
   ws.on('close', () => {
+    //When a user disconnects, the user count is updated based on how many more people are still connected
     clientCount.count = wss.clients.size;
     broadcast(clientCount);
   });
